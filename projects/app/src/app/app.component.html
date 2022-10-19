@@ -260,7 +260,7 @@
 
   <div class="row">
     <div class="col-md-5">
-      <input [style.background]="color13" [cpAlphaChannel]="'always'" [cpOutputFormat]="'rgba'" [cpPresetColorsArr]="presetColorsArr" [cpAddColorButton]="true" [(colorPicker)]="color13"/>
+      <input [style.background]="color13" [cpAlphaChannel]="'always'" [cpOutputFormat]="'rgba'" [cpPresetColors]="['#fff', '#2889e9']" [cpAddColorButton]="true" [(colorPicker)]="color13"/>
     </div>
 
     <div class="col-md-7">
@@ -269,7 +269,23 @@
 &lt;input [style.background]="color"
        [cpAlphaChannel]="'always'"
        [cpOutputFormat]="'rgba'"
-       [cpPresetColors]="presetColorsArr"
+       [cpPresetColors]="['#000', '#a95151']"
+       [cpAddColorButton]="true"
+       [(colorPicker)]="color"/&gt;
+      </pre>
+    </div>
+  </div><div class="row">
+    <div class="col-md-5">
+      <input [style.background]="color13" [cpAlphaChannel]="'always'" [cpOutputFormat]="'rgba'" [cpPresetColorsArr]="presetColorsArr" [cpAddColorButton]="true" [cpAddColorButtonClass]="customClassForAddColorButton" [(colorPicker)]="color13"/>
+    </div>
+
+    <div class="col-md-7"  style="background: red">
+      <p>Handle cpPresetColorsArr:</p>
+      <pre>
+&lt;input [style.background]="color"
+       [cpAlphaChannel]="'always'"
+       [cpOutputFormat]="'rgba'"
+       [cpPresetColorsArr]="{{presetColorsArr | json}}"
        [cpAddColorButton]="true"
        [(colorPicker)]="color"/&gt;
       </pre>

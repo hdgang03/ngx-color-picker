@@ -111,6 +111,7 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
     @Output() cpCmykColorChange = new EventEmitter<string>(true);
 
     @Output() cpPresetColorsChange = new EventEmitter<any>(true);
+    @Output() cpPresetColorsArrChange = new EventEmitter<any>(true);
 
     @HostListener('click') handleClick(): void {
         this.inputFocus();
@@ -316,5 +317,9 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
 
     public presetColorsChanged(value: any[]): void {
         this.cpPresetColorsChange.emit(value);
+    }
+
+    public presetColorsArrChanged(value: any[]): void {
+        this.cpPresetColorsArrChange.emit(value);
     }
 }

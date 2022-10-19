@@ -110,6 +110,8 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     public cpSaveClickOutside: boolean;
     public cpCloseClickOutside: boolean;
 
+    public renamingCpPresetLabel = false;
+
     public cpPosition: string;
     public cpUsePosition: string;
     public cpPositionOffset: number;
@@ -123,16 +125,11 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     public cpCancelButtonClass: string;
 
     public eyeDropperSupported =
-        isPlatformBrowser(this.platformId) && 'EyeDropper'
-    in
-    this
-.
-    document
-.
-    defaultView;
+        isPlatformBrowser(this.platformId) && 'EyeDropper' in this.document.defaultView;
     public cpEyeDropper: boolean;
 
     public cpPresetLabel: string;
+    public previousCpPresetLabel: string;
     public cpPresetColors: string[];
     public cpPresetColorsArr: CpPresetColors[];
     public cpPresetColorsClass: string;
@@ -258,7 +255,6 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
                        cpAddColorButtonText: string, cpRemoveColorButtonClass: string, cpEyeDropper: boolean,
                        cpTriggerElement: ElementRef, cpExtraTemplate: TemplateRef<any>): void {
         this.setInitialColor(color);
-
         this.setColorMode(cpColorMode);
 
         this.isIE10 = (detectIE() === 10);
@@ -356,14 +352,53 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.initialColor = color;
     }
 
-    protected changePresetColors(e): void {
-        this.setPresetConfig(e.target.value, this.cpPresetColorsArr.find(c => c.name === e.target.value).colors);
+    public handleRenameCpLabel(save = false): void {
+        if (save) {
+            this.cpPresetColorsArr.find(c => c.name === this.previousCpPresetLabel).name = this.cpPresetLabel;
+        } else {
+            this.cpPresetLabel = this.previousCpPresetLabel;
+        }
+        this.renamingCpPresetLabel = false;
     }
 
-    public setPresetConfig(cpPresetLabel: string, cpPresetColors: string[], cpPresetColorsArr: CpPresetColors[] = []): void {
+    public renameCpPresetLabel(): void {
+        this.previousCpPresetLabel = this.cpPresetLabel
+        this.renamingCpPresetLabel = !this.renamingCpPresetLabel;
+    }
+
+    public onAcceptName(event): void {
+        event.stopPropagation();
+        if (event.code === 'Enter') {
+            return this.handleRenameCpLabel(true);
+        }
+        if (event.code === 'Escape') {
+            return this.handleRenameCpLabel();
+        }
+    }
+
+    public isSelected(name): boolean {
+        return this.cpPresetLabel === name;
+    }
+
+    public changePresetColors(e): void {
+        if (e.target.value === 'new selection') {
+            const newPresetColors = {
+                name: 'New color palette',
+                colors: []
+            }
+            this.cpPresetColorsArr.push(newPresetColors);
+            this.setPresetConfig(newPresetColors.name, newPresetColors.colors);
+            this.previousCpPresetLabel = newPresetColors.name;
+            this.renamingCpPresetLabel = true;
+        } else {
+            this.setPresetConfig(e.target.value, this.cpPresetColorsArr.find(c => c.name === e.target.value).colors);
+        }
+    }
+
+    protected setPresetConfig(cpPresetLabel: string, cpPresetColors: string[], cpPresetColorsArr: CpPresetColors[] = []): void {
         if (cpPresetColorsArr.length) {
-            this.cpPresetLabel = cpPresetColorsArr[0].name;
-            this.cpPresetColors = cpPresetColorsArr[0].colors
+            this.cpPresetLabel = undefined;
+            this.cpPresetColors = undefined
         } else {
             this.cpPresetLabel = cpPresetLabel;
             this.cpPresetColors = cpPresetColors;
@@ -836,19 +871,33 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     public onAddPresetColor(event: any, value: string, name: string): void {
         event.stopPropagation();
-        if (!this.cpPresetColorsArr.find(c => c.name === name).colors.filter((color) => (color === value)).length) {
-            this.cpPresetColorsArr.find(c => c.name === name).colors = this.cpPresetColorsArr.find(c => c.name === name).colors.concat(value);
-            this.setPresetConfig(this.cpPresetLabel, this.cpPresetColors, this.cpPresetColorsArr);
-            this.directiveInstance.presetColorsChanged(this.cpPresetColorsArr.find(c => c.name === name).colors);
+        if (this.cpPresetColorsArr) {
+            if (!this.cpPresetColorsArr.find(c => c.name === name).colors.filter((color) => (color === value)).length) {
+                this.cpPresetColorsArr.find(c => c.name === name).colors = this.cpPresetColorsArr.find(c => c.name === name).colors.concat(value);
+                this.setPresetConfig(this.cpPresetColorsArr.find(c => c.name === name).name, this.cpPresetColorsArr.find(c => c.name === name).colors);
+                this.directiveInstance.presetColorsArrChanged(this.cpPresetColorsArr);
+            }
+        } else {
+            if (!this.cpPresetColors.filter((color) => (color === value)).length) {
+                this.cpPresetColors = this.cpPresetColors.concat(value);
+
+                this.directiveInstance.presetColorsChanged(this.cpPresetColors);
+            }
         }
     }
 
     public onRemovePresetColor(event: any, value: string, name: string): void {
         event.stopPropagation();
-        this.cpPresetColorsArr.find(c => c.name === name).colors
-            = this.cpPresetColorsArr.find(c => c.name === name).colors.filter((color) => (color !== value));
-        this.setPresetConfig(this.cpPresetLabel, this.cpPresetColors, this.cpPresetColorsArr);
-        this.directiveInstance.presetColorsChanged(this.cpPresetColorsArr.find(c => c.name === name).colors);
+        if (this.cpPresetColorsArr) {
+            this.cpPresetColorsArr.find(c => c.name === name).colors
+                = this.cpPresetColorsArr.find(c => c.name === name).colors.filter((color) => (color !== value));
+            this.setPresetConfig(this.cpPresetColorsArr.find(c => c.name === name).name, this.cpPresetColorsArr.find(c => c.name === name).colors);
+            this.directiveInstance.presetColorsArrChanged(this.cpPresetColorsArr);
+        } else {
+            this.cpPresetColors = this.cpPresetColors.filter((color) => (color !== value));
+
+            this.directiveInstance.presetColorsChanged(this.cpPresetColors);
+        }
     }
 
     // Private helper functions for the color picker dialog status

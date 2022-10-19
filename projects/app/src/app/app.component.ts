@@ -14,9 +14,11 @@ export class AppComponent {
     public rgbaText: string = 'rgba(165, 26, 214, 0.2)';
 
     public presetColorsArr = [
-        {name: 'first', colors: ['#fff', '#2889e9']},
-        {name: 'second', colors: ['#000', '#a95151']},
+        {name: 'company colors', colors: ['#fff', '#2889e9']},
+        {name: 'my favourite colors', colors: ['#000', '#a95151']},
     ]
+
+    public customClassForAddColorButton = 'custom-button';
 
     public arrayColors: any = {
         color1: '#2883e9',

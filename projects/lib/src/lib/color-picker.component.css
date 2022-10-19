@@ -149,8 +149,46 @@
     text-align: right;
 }
 
+.custom-button {
+    margin: 2px 2px;
+    padding: 2px 1px;
+    color: #fff;
+    background: #4169ae;
+    border: none;
+}
+.custom-button:disabled {
+    color: gray;
+    background: #fff;
+}
+.custom-cancel-button {
+    margin: 2px 2px;
+    padding: 2px 1px;
+    background: #fff;
+    color: #4169ae;
+    border: none;
+}
+
+.custom-cancel-button:hover {
+    background: #bbbbbb;
+}
+
 .color-picker .button-area button {
     margin-left: 8px;
+}
+
+.select-preset-colors-group {
+    font-size: 11px;
+    white-space: nowrap;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+.select-preset-colors-group #colors {
+    width: 60%;
+}
+
+#rename-input {
+    width: 60%;
+    margin: 5px;
 }
 
 .color-picker .preset-area {

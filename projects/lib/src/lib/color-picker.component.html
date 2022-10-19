@@ -25,7 +25,7 @@
             </div>
 
             <button *ngIf="cpAddColorButton" type="button" class="{{cpAddColorButtonClass}}"
-                    [disabled]="cpPresetColors && cpPresetColors.length >= cpMaxPresetColorsLength"
+                    [disabled]="(cpPresetColors && cpPresetColors.length >= cpMaxPresetColorsLength) || !cpPresetColors"
                     (click)="onAddPresetColor($event, selectedColor, cpPresetLabel)">
                 {{cpAddColorButtonText}}
             </button>
@@ -159,30 +159,58 @@
         <span class="type-policy-arrow" (click)="onFormatToggle(-1)"></span>
         <span class="type-policy-arrow" (click)="onFormatToggle(1)"></span>
     </div>
-    <div class="preset-area">
 
-
-        <div *ngIf="cpPresetColorsArr || cpAddColorButton" class="select-preset-colors-group">
+    <div *ngIf="cpPresetColorsArr" class="select-preset-colors-group">
+        <div *ngIf="!renamingCpPresetLabel">
             <label for="colors">Select preset colors:</label>
-            <select name="colors" id="colors" (change)="changePresetColors($event)">
-                <option *ngFor="let colors of cpPresetColorsArr">{{colors.name}}</option>
+            <br>
+            <select name="colors" id="colors" (change)="changePresetColors($event)" [selectedIndex]="">
+                <option value="" disabled selected>Preset colors</option>
+                <option *ngFor="let colors of cpPresetColorsArr"
+                        [selected]="isSelected(colors.name)">{{colors.name}}</option>
+                <option value="new selection">Create new palette</option>
             </select>
+            <button class="custom-button" (click)="renameCpPresetLabel()" [disabled]="!cpPresetLabel">Rename</button>
         </div>
+        <div *ngIf="renamingCpPresetLabel">
+            <ng-form>
+                <input id="rename-input" type="text" [(ngModel)]="cpPresetLabel" (keyup)="onAcceptName($event)"/>
+            </ng-form>
+            <button class="custom-button" (click)="handleRenameCpLabel(true)">Save</button>
+            <button class="custom-cancel-button" (click)="handleRenameCpLabel()">Cancel</button>
+        </div>
+    </div>
 
-        <hr>
+    <hr>
+    <div class="preset-area">
+        <ng-container *ngIf="cpPresetColors && cpPresetColorsArr">
 
-        <div class="preset-label">{{cpPresetLabel}}</div>
-
-        <div *ngIf="cpPresetColors?.length" class="{{cpPresetColorsClass}}">
-            <div *ngFor="let color of cpPresetColors" class="preset-color" [style.backgroundColor]="color"
-                 (click)="setColorFromString(color)">
+            <div *ngIf="cpPresetColors?.length" class="{{cpPresetColorsClass}}">
+                <div *ngFor="let color of cpPresetColors" class="preset-color" [style.backgroundColor]="color"
+                     (click)="setColorFromString(color)">
                 <span *ngIf="cpAddColorButton" class="{{cpRemoveColorButtonClass}}"
                       (click)="onRemovePresetColor($event, color, cpPresetLabel)"></span>
+                </div>
             </div>
-        </div>
 
-        <div *ngIf="!cpPresetColors?.length && cpAddColorButton"
-             class="{{cpPresetEmptyMessageClass}}">{{cpPresetEmptyMessage}}</div>
+            <div *ngIf="!cpPresetColors?.length && cpAddColorButton"
+                 class="{{cpPresetEmptyMessageClass}}">{{cpPresetEmptyMessage}}</div>
+        </ng-container>
+        <ng-container *ngIf="cpPresetColors && !cpPresetColorsArr">
+            <div class="preset-label">{{cpPresetLabel}}</div>
+
+            <div *ngIf="cpPresetColors?.length" class="{{cpPresetColorsClass}}">
+                <div *ngFor="let color of cpPresetColors" class="preset-color" [style.backgroundColor]="color"
+                     (click)="setColorFromString(color)">
+                <span *ngIf="cpAddColorButton" class="{{cpRemoveColorButtonClass}}"
+                      (click)="onRemovePresetColor($event, color, cpPresetLabel)"></span>
+                </div>
+            </div>
+
+            <div *ngIf="!cpPresetColors?.length && cpAddColorButton"
+                 class="{{cpPresetEmptyMessageClass}}">{{cpPresetEmptyMessage}}</div>
+        </ng-container>
+        <ng-container *ngIf="cpPresetColorsArr && !cpPresetColors">Select preset colors selection!</ng-container>
     </div>
     <div *ngIf="cpOKButton || cpCancelButton" class="button-area">
         <button *ngIf="cpCancelButton" type="button" class="{{cpCancelButtonClass}}"
