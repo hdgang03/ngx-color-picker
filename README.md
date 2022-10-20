@@ -77,7 +77,9 @@ import { ColorPickerModule } from 'ngx-color-picker';
 
 [cpPresetLabel]              // Label text for the preset colors if any provided ('Preset colors').
 [cpPresetColors]             // Array of preset colors to show in the color picker dialog ([]).
-
+[cpPresetColorsArr]          // Array of preset colors palettes to show in the color picker dialog        
+                             //([{name: string, colors: []}]).
+        
 [cpDisableInput]             // Disables / hides the color input field from the dialog (false).
 
 [cpDialogDisplay]            // Dialog positioning mode: 'popup', 'inline' ('popup').
@@ -135,6 +137,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
 (cpCmykColorChange)          // Outputs the color as CMYK string if CMYK is enabled (value: string).
 
 (cpPresetColorsChange)       // Preset colors, send when 'Add Color' button is pressed (value: array).
+(cpPresetColorsArrChange)    //Preset colors palettes, send when color palettes are changed (value: array).
 ```
 
 ##### Available control / helper functions (provided by the directive):
