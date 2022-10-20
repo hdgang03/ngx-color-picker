@@ -165,12 +165,13 @@
             <label for="colors">Select preset colors:</label>
             <br>
             <select name="colors" id="colors" (change)="changePresetColors($event)" [selectedIndex]="">
-                <option value="" disabled selected>Preset colors</option>
+                <option value="" disabled [selected]="!cpPresetLabel">Preset colors</option>
                 <option *ngFor="let colors of cpPresetColorsArr"
-                        [selected]="isSelected(colors.name)">{{colors.name}}</option>
+                        [selected]="cpPresetLabel === colors.name">{{colors.name}}</option>
                 <option value="new selection">Create new palette</option>
             </select>
             <button class="custom-button" (click)="renameCpPresetLabel()" [disabled]="!cpPresetLabel">Rename</button>
+            <button class="custom-delete-button" (click)="onDeletePresetColors()" [disabled]="!cpPresetLabel">Delete</button>
         </div>
         <div *ngIf="renamingCpPresetLabel">
             <ng-form>

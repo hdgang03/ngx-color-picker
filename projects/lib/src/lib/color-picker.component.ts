@@ -376,8 +376,11 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
-    public isSelected(name): boolean {
-        return this.cpPresetLabel === name;
+    public onDeletePresetColors(): void {
+        this.cpPresetColorsArr = this.cpPresetColorsArr.filter(c => c.name !== this.cpPresetLabel);
+        this.setPresetConfig('', [], this.cpPresetColorsArr);
+        this.directiveInstance.presetColorsArrChanged(this.cpPresetColorsArr);
+        this.cdRef.detectChanges();
     }
 
     public changePresetColors(e): void {
